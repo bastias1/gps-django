@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - otrecorder
+    environment:
+      - DJANGO_SETTINGS_MODULE=proyectoflota.settings
+
+  otrecorder:
+    image: owntracks/recorder
+    ports:
+      - 8083:8083
+    volumes:
+      - config:/config
+      - store:/store
+    restart: unless-stopped
+    environment:
+      - OTR_PORT=0
+volumes:
+  store:
+  config:

@@ -1,0 +1,106 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+{% block title %}Gestión de Usuarios{% endblock %}
+{% block content %}
+<div class="container px-4 py-5" id="featured-3">
+    <div class="d-flex justify-content-between align-items-center pb-3 border-bottom">
+        <h2 class="m-0">Lista de Usuarios</h2>
+        <a href="{% url 'creacionUsuario' %}" class="btn btn-success">Agregar nuevo Usuario</a>
+    </div>
+
+    {% if usuarios %}
+    <table class="table table-striped table-hover mt-4">
+        <thead class="table-dark">
+            <tr>
+                <th>Nombre</th>
+                <th>Teléfono</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for usuario in usuarios %}
+            <tr>
+                <td>{{ usuario.user.first_name }} {{ usuario.user.last_name }}</td>
+                <td>{{ usuario.telefono }}</td>
+                <td>
+                    <button 
+                        class="btn btn-info btn-sm" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#detailsModal{{ usuario.id }}"
+                    >
+                        Ver Detalles
+                    </button>
+                </td>
+            </tr>
+
+            <!-- Modal for Detailed Info -->
+            <div 
+                class="modal fade" 
+                id="detailsModal{{ usuario.id }}" 
+                tabindex="-1" 
+                aria-labelledby="detailsModalLabel{{ usuario.id }}" 
+                aria-hidden="true"
+            >
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="detailsModalLabel{{ usuario.id }}">
+                                Detalles del Usuario
+                            </h5>
+                            <button 
+                                type="button" 
+                                class="btn-close" 
+                                data-bs-dismiss="modal" 
+                                aria-label="Close"
+                            ></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Nombre:</strong> {{ usuario.user.first_name }} {{ usuario.user.last_name }}</p>
+                                    <p><strong>RUT:</strong> {{ usuario.rut }}</p>
+                                    <p><strong>Teléfono:</strong> {{ usuario.telefono }}</p>
+                                    <p><strong>Correo:</strong> {{ usuario.user.email }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Usuario:</strong> {{ usuario.user.username }}</p>
+                                    <p><strong>Tipo de Usuario:</strong> {{ usuario.tipo_usuario }}</p>
+                                    <p><strong>Fecha de Contratación:</strong> {{ usuario.user.date_joined|date:"d/m/Y" }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button 
+                                class="btn btn-warning" 
+                                onclick="window.location.href='{% url 'modificarUsuario' usuario.id %}'"
+                            >
+                                Modificar
+                            </button>
+                            <button 
+                                class="btn btn-danger" 
+                                onclick="window.location.href='{% url 'eliminarUsuario' usuario.id %}'"
+                            >
+                                Eliminar
+                            </button>
+                            <button 
+                                type="button" 
+                                class="btn btn-secondary" 
+                                data-bs-dismiss="modal"
+                            >
+                                Cerrar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End Modal -->
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="alert alert-warning mt-4">
+        <strong>No existen usuarios registrados.</strong>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

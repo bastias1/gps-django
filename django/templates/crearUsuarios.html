@@ -1,0 +1,18 @@
+{% extends 'dashboard.html' %} {% load static %} {% block title %} {% if es_modificar %} Modificar Empleado {% else %} Creación de Empleados {% endif %} {% endblock %}
+{%block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+	<h1 class="h2">{% if es_modificar %} Modificar Datos del Empleado {% else %} Creación de Cuentas para Empleados {% endif %}</h1>
+</div>
+<div class="card-body p-5">
+	<form action="" method="post">
+		{% csrf_token %} {{ form_user.as_p }} {{ form_usuario.as_p }}
+
+		<div class="mt-4">
+			<input
+				class="btn {% if es_modificar %}btn-primary{% else %}btn-dark{% endif %} rounded-pill px-4 py-2"
+				type="submit"
+				value="{% if es_modificar %}Guardar Cambios{% else %}Agregar Empleado{% endif %}" />
+		</div>
+	</form>
+</div>
+{% endblock %}

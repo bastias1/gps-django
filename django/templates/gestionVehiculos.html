@@ -1,0 +1,107 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+{% block title %}Gestión de Vehículos{% endblock %}
+{% block content %}
+<div class="container px-4 py-5" id="featured-3">
+    <div class="d-flex justify-content-between align-items-center pb-3 border-bottom">
+        <h2 class="m-0">Lista de Vehículos</h2>
+        <a href="{% url 'crearVehiculo' %}" class="btn btn-success">Agregar nuevo Vehículo</a>
+    </div>
+
+    {% if vehiculos %}
+    <table class="table table-striped table-hover mt-4">
+        <thead class="table-dark">
+            <tr>
+                <th>Patente</th>
+                <th>Marca</th>
+                <th>Modelo</th>
+                <th>Año</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for vehiculo in vehiculos %}
+            <tr>
+                <td>{{ vehiculo.patente }}</td>
+                <td>{{ vehiculo.marca }}</td>
+                <td>{{ vehiculo.modelo }}</td>
+                <td>{{ vehiculo.anno }}</td>
+                <td>
+                    <button 
+                        class="btn btn-info btn-sm" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#detailsModal{{ vehiculo.id }}"
+                    >
+                        Ver Detalles
+                    </button>
+                </td>
+            </tr>
+
+            <!-- Modal for Detailed Info -->
+            <div 
+                class="modal fade" 
+                id="detailsModal{{ vehiculo.id }}" 
+                tabindex="-1" 
+                aria-labelledby="detailsModalLabel{{ vehiculo.id }}" 
+                aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="detailsModalLabel{{ vehiculo.id }}">
+                                Detalles del Vehículo
+                            </h5>
+                            <button 
+                                type="button" 
+                                class="btn-close" 
+                                data-bs-dismiss="modal" 
+                                aria-label="Close"
+                            ></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Patente:</strong> {{ vehiculo.patente }}</p>
+                                    <p><strong>Marca:</strong> {{ vehiculo.marca }}</p>
+                                    <p><strong>Modelo:</strong> {{ vehiculo.modelo }}</p>
+                                    <p><strong>Año:</strong> {{ vehiculo.anno }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Propietario:</strong> {{ vehiculo.conductor.user.first_name }} {{ vehiculo.conductor.user.last_name }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button 
+                                class="btn btn-warning" 
+                                onclick="window.location.href='{% url 'modificarVehiculo' vehiculo.id %}'"
+                            >
+                                Modificar
+                            </button>
+                            <button 
+                                class="btn btn-danger" 
+                                onclick="window.location.href='{% url 'eliminarVehiculo' vehiculo.id %}'"
+                            >
+                                Eliminar
+                            </button>
+                            <button 
+                                type="button" 
+                                class="btn btn-secondary" 
+                                data-bs-dismiss="modal"
+                            >
+                                Cerrar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End Modal -->
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="alert alert-warning mt-4">
+        <strong>No existen vehículos registrados.</strong>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+{% block title %}Mapa en Tiempo Real{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<main>
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Ubicación Flota en Tiempo Real</h1>
+    </div>
+    <div id="map" style="height: 600px;"></div>
+    <div id="error-message" style="color: red; font-weight: bold; display: none;">
+        Error al cargar datos GPS.
+    </div>
+</main>
+
+<script>
+    // Initialize the map
+    const map = L.map('map').setView([0, 0], 2);
+
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    let markers = []; // Store markers to dynamically update the map
+
+    // Function to fetch GPS data
+    async function fetchGPSData() {
+        try {
+            const response = await fetch('/mapa/data'); // Replace with your endpoint for JSON data
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const drivers = await response.json();
+
+            // Remove existing markers
+            markers.forEach(marker => map.removeLayer(marker));
+            markers = [];
+
+            // Add new markers
+            drivers.forEach(driver => {
+                const marker = L.marker([driver.latitud, driver.longitud])
+                    .addTo(map)
+                    .bindPopup(`Conductor: ${driver.user_id}<br>Hora: ${driver.timestamp}`);
+                markers.push(marker);
+            });
+
+            // Adjust the map to fit all markers
+            const bounds = drivers.map(driver => [driver.latitud, driver.longitud]);
+            if (bounds.length > 0) {
+                map.fitBounds(bounds);
+            }
+        } catch (error) {
+            console.error('Error fetching GPS data:', error);
+            document.getElementById('error-message').style.display = 'block';
+        }
+    }
+
+    // Fetch data on page load
+    fetchGPSData();
+
+    // Refresh the map data every 10 seconds
+    setInterval(fetchGPSData, 10000);
+</script>
+{% endblock %}

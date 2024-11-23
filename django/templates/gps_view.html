@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ubicación GPS</title>
+</head>
+<body>
+    <h1>Detalles del GPS</h1>
+    <p><strong>Ubicación Actual:</strong> Latitud: {{ gps.latitud }}, Longitud: {{ gps.longitud }}</p>
+
+    <h2>Conductores Observadores:</h2>
+    <ul>
+        {% for conductor in conductores %}
+            <li>Conductor ID: {{ conductor.id }} - Estado: {{ conductor.estado }} - Fecha de Creación: {{ conductor.fecha_creacion }}</li>
+        {% empty %}
+            <li>No hay conductores observando este GPS.</li>
+        {% endfor %}
+    </ul>
+
+
+    <br>
+    <a href="{% url 'home' %}">Volver al inicio</a>
+</body>
+</html>
