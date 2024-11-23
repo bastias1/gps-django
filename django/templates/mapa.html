@@ -60,10 +60,10 @@
         }
     }
 
-    // Fetch data on page load
+    // obtiene datos al cargar la pagina
     fetchGPSData();
 
-    // Refresh the map data every 10 seconds
-    setInterval(fetchGPSData, 10000);
+    // Actualiza el mapa cada 30s
+    setInterval(fetchGPSData, 30000);
 </script>
 {% endblock %}

@@ -34,19 +34,31 @@ def dashboard(request):
 
 def get_users_and_devices():
     try:
-        response = requests.get("http://192.168.0.6:8083/api/0/monitor")  # Replace with your Recorder API URL
+        # Fetch the data from the Recorder API
+        response = requests.get("http://192.168.0.6:8083/api/0/monitor")  # Cambiar la IP con la IP del Owntracks.
         response.raise_for_status()
-        data = response.text.strip().split("\n")  # Parse response as lines of text
+        data = response.text.strip().split("\n")
         users_devices = []
 
         for line in data:
-            parts = line.split()  # Split each line by spaces
+            parts = line.split()  # Dividir Lineas
             if len(parts) > 1:
-                topic = parts[1]  # The topic contains user and device
-                # Example topic: "owntracks/conductor/beyond1"
+                topic = parts[1]  # Topic contiene user y device (dispositivo)
+                # Ejemplo topic: "owntracks/conductor/beyond1"
                 try:
                     _, user, device = topic.split("/")
                     users_devices.append({'user': user, 'device': device})
+
+                    # Actualizar el campo dipositivo para el usuario/conductor correspondiente en la bdd
+                    try:
+                        usuario = Usuario.objects.get(user__username=user)
+                        if usuario.device != device:  # Actualizar solo si el dispositivo a cambiado
+                            usuario.device = device
+                            usuario.save()
+                            print(f"Updated device for user {user}: {device}")
+                    except Usuario.DoesNotExist:
+                        print(f"User {user} not found in the database, skipping device update.")
+
                 except ValueError:
                     continue  # Skip lines that don't match the format
 
@@ -75,6 +87,7 @@ def mapa(request):
     return render(request, 'mapa.html', {'drivers': conductores_ubi})
 
 def mapa_data(request):
+    fetch_and_save_gps_data()
     conductores = Usuario.objects.filter(tipo_usuario='Conductor')
     conductores_ubi = []
 
