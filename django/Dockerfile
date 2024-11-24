@@ -1,10 +1,6 @@
 # Use an official Python image as the base
 FROM python:3.10-slim
 
-# Set environment variables to prevent bytecode creation and buffer outputs
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
-
 # Update and install required system dependencies
 RUN apt-get update -y && apt-get install -y \
     python3-dev \

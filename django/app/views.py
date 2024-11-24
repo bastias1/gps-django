@@ -34,7 +34,6 @@ def dashboard(request):
 
 def get_users_and_devices():
     try:
-        # Fetch the data from the Recorder API
         response = requests.get("http://192.168.0.6:8083/api/0/monitor")  # Cambiar la IP con la IP del Owntracks.
         response.raise_for_status()
         data = response.text.strip().split("\n")
@@ -57,14 +56,14 @@ def get_users_and_devices():
                             usuario.save()
                             print(f"Updated device for user {user}: {device}")
                     except Usuario.DoesNotExist:
-                        print(f"User {user} not found in the database, skipping device update.")
+                        print(f"Usuario {user} no existe en la bdd")
 
                 except ValueError:
-                    continue  # Skip lines that don't match the format
+                    continue
 
         return users_devices
     except requests.RequestException as e:
-        print(f"Error fetching users and devices: {e}")
+        print(f"Error obteniendo usuario y dispositivo: {e}")
         return []
 
 def mapa(request):
@@ -106,7 +105,7 @@ def mapa_data(request):
 def fetch_and_save_gps_data():
     users_devices = get_users_and_devices()  # Get user/device pairs
     if not users_devices:
-        print("No users or devices found.")
+        print("Usuarios no Encontrados.")
         return
 
     for user_device in users_devices:
@@ -118,26 +117,19 @@ def fetch_and_save_gps_data():
             'device': device
         }
         try:
-            print(f"Fetching data for user={user} and device={device}...")
+            print(f"Obteniendo datos para el usuario={user} y dispositivo={device}...")
             response = requests.get("http://192.168.0.6:8083/api/0/locations", params=params)
             response.raise_for_status()
             data = response.json()
             
-
-            # Debugging: Print the API response
-            print(f"Response for user={user}, device={device}: {data}")
-
             if "data" in data:
-                locations = data["data"]  # Extract the location data
+                locations = data["data"]  # Extraer la ubicacion
                 for entry in locations:
-                    print(f"Raw location entry: {entry}")  # Debugging
-
-                    lat = entry.get('lat')  # Adjust key names based on actual data
+                    lat = entry.get('lat')
                     lon = entry.get('lon')
                     tst = entry.get('tst')
 
                     if lat and lon and tst:
-                        print(f"Processing entry with lat={lat}, lon={lon}, tst={tst}")
                         try:
                             conductor = Usuario.objects.get(user__username=user)
                             GPSLog.objects.update_or_create(
@@ -147,19 +139,20 @@ def fetch_and_save_gps_data():
                                     "longitud": lon,
                                 }
                             )
-                            print(f"GPSLog created/updated for lat={lat}, lon={lon}")
+                            print(f"LOG GPS creado/actualizado en lat={lat}, lon={lon}")
+                            print("")
+                            print("Datos GPS Obtenidos y guardados en bdd")
                         except Usuario.DoesNotExist:
-                            print(f"User {user} not found in the database, skipping entry.")
+                            print(f"Usuario {user} no registrado en la bdd")
                     else:
-                        print(f"Incomplete entry: {entry}")
+                        print(f"Entry incompleto: {entry}")
             else:
                 print(f"Unexpected API response format: {data}")
 
 
         except requests.RequestException as e:
-            print(f"Error fetching data for user={user}, device={device}: {e}")
+            print(f"Error al obtener data para el usuario={user}, dispositivo={device}: {e}")
 
-    print("GPS data successfully fetched and saved!")
 
 
 
