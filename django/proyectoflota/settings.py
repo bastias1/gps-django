@@ -29,6 +29,8 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 LOGIN_URL = '/login/' 
+LOGIN_REDIRECT_URL = 'mapa'  # Ruta después de un login exitoso
+
 
 
 # Application definition
