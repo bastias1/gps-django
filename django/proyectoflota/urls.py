@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from app import views as views
+from django.contrib.auth.decorators import login_required
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -27,28 +28,28 @@ urlpatterns = [
     # Sesión
     path('login/', views.inicioSesion, name='login'),
     path('logout/', views.cerrarSesion, name='logout'),
-    path('dashboard/', views.dashboard, name='dashboard'),
+    path('dashboard/', login_required(views.dashboard), name='dashboard'),
 
     # Menús
-    path('mapa/', views.mapa, name='mapa'),
-    path('mapa/data/',views.mapa_data, name='mapa_data'),
+    path('mapa/', login_required(views.mapa), name='mapa'),
+    path('mapa/data/',login_required(views.mapa_data), name='mapa_data'),
 
     # Empleados
-    path('usuarios/', views.gestionUsuarios, name='usuarios'),
-    path('crearUsuario/', views.creacionUsuario, name='creacionUsuario'),
-    path('modificarUsuario/<int:id>/', views.modificarUsuario, name='modificarUsuario'),
-    path('eliminarUsuario/<int:id>/', views.eliminarUsuario, name='eliminarUsuario'),
+    path('usuarios/', login_required(views.gestionUsuarios), name='usuarios'),
+    path('crearUsuario/', login_required(views.creacionUsuario), name='creacionUsuario'),
+    path('modificarUsuario/<int:id>/', login_required(views.modificarUsuario), name='modificarUsuario'),
+    path('eliminarUsuario/<int:id>/', login_required(views.eliminarUsuario), name='eliminarUsuario'),
 
 
     #Conductores
-    path('conductores/',views.gestionConductores,name='conductores'),
-    path('crearConductor/',views.crearConductor,name='creacionConductor'),
-    path('modificarConductor/<int:id>/',views.modificarConductor,name='modificarConductor'),
-    path('eliminarConductor/<int:id>/',views.eliminarConductor,name='eliminarConductor'),
+    path('conductores/',login_required(views.gestionConductores),name='conductores'),
+    path('crearConductor/',login_required(views.crearConductor),name='creacionConductor'),
+    path('modificarConductor/<int:id>/',login_required(views.modificarConductor),name='modificarConductor'),
+    path('eliminarConductor/<int:id>/',login_required(views.eliminarConductor),name='eliminarConductor'),
     
     # Vehículos
-    path('vehiculos/', views.gestionVehiculos, name='vehiculos'),
-    path('crearVehiculo/', views.crearVehiculo, name='crearVehiculo'),
-    path('modificarVehiculo/<int:id>/', views.modificarVehiculo, name='modificarVehiculo'),
-    path('eliminarVehiculo/<int:id>/', views.eliminarVehiculo, name='eliminarVehiculo'),
+    path('vehiculos/', login_required(views.gestionVehiculos), name='vehiculos'),
+    path('crearVehiculo/', login_required(views.crearVehiculo), name='crearVehiculo'),
+    path('modificarVehiculo/<int:id>/', login_required(views.modificarVehiculo), name='modificarVehiculo'),
+    path('eliminarVehiculo/<int:id>/', login_required(views.eliminarVehiculo), name='eliminarVehiculo'),
 ]

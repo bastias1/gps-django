@@ -17,7 +17,7 @@ def inicioSesion(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('dashboard')
+            return redirect('mapa')
         else:
             messages.success(request,("Hubo un error al iniciar sesion."))
             return redirect('login')
